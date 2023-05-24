@@ -1,6 +1,6 @@
-# kanagata
+# CHAT WITH SOCKET NODE JS
 
-A new Flutter project.
+Chat App using Socket And NodeJS
 
 ## Getting Started
 
