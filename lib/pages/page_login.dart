@@ -19,7 +19,6 @@ class PageLogin extends StatefulWidget {
 
 class _PageLoginState extends State<PageLogin> {
   TextEditingController ctrlUser = TextEditingController();
-  TextEditingController ctrlPassword = TextEditingController();
   final ApiService _apiService = ApiService();
   Timer? timer;
   Color conColor = ColorsTheme.hijau;
@@ -27,8 +26,6 @@ class _PageLoginState extends State<PageLogin> {
   checkMandatory() {
     if (ctrlUser.text.isEmpty) {
       return "Silakan isi Username";
-    } else if (ctrlPassword.text.isEmpty) {
-      return "Silakan isi Password";
     } else {
       return "";
     }
@@ -57,7 +54,6 @@ class _PageLoginState extends State<PageLogin> {
   @override
   void initState() {
     super.initState();
-    ctrlPassword.text = '12345';
     ctrlUser.text = 'CKR SSM';
     timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => checkConnection());
   }
@@ -144,38 +140,6 @@ class _PageLoginState extends State<PageLogin> {
                         SizedBox(
                           height: MediaQuery.of(context).size.height * 0.01,
                         ),
-                        //PASSWORD FIELD
-                        Padding(
-                          padding: const EdgeInsets.only(left: 32, right: 32),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: ColorsTheme.background2,
-                              borderRadius: BorderRadius.circular(25.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 8, right: 8),
-                              child: Row(
-                                children: <Widget>[
-                                  const Icon(Icons.lock),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  Expanded(
-                                    child: TextField(
-                                      controller: ctrlPassword,
-                                      obscureText: true,
-                                      decoration: const InputDecoration(border: InputBorder.none, hintText: 'Password'),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.02,
-                        ),
                         Padding(
                           padding: const EdgeInsets.only(left: 32, right: 32),
                           child: SizedBox(
@@ -191,7 +155,7 @@ class _PageLoginState extends State<PageLogin> {
                                         context: context,
                                         barrierDismissible: false,
                                         builder: (BuildContext context) => const WidgetProgressSubmit());
-                                    _apiService.apiLogin(ctrlUser.text, ctrlPassword.text).then((res) async {
+                                    _apiService.apiLogin(ctrlUser.text).then((res) async {
                                       Navigator.of(context, rootNavigator: true).pop();
                                       FocusScope.of(context).requestFocus(FocusNode());
                                       if (res.status) {
@@ -216,7 +180,7 @@ class _PageLoginState extends State<PageLogin> {
                                       borderRadius: BorderRadius.circular(25),
                                     ))),
                                 child: const Text(
-                                  "LOGIN",
+                                  "Let's Chat",
                                   style: TextStyle(color: Colors.white, fontSize: 16),
                                 ),
                               ),

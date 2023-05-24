@@ -14,10 +14,10 @@ class ApiService {
   static const String urlChangeStatus = "/api/plc/change-status";
   static const String urlStatusMachine = "/api/plc/list-status";
 
-  Future<GlobalResponse> apiLogin(String username, String password) async {
+  Future<GlobalResponse> apiLogin(String username) async {
     try {
       var url = ctrl.httpMainUrl;
-      Map data = {"Username": username, "Password": password};
+      Map data = {"Username": username};
       var body = jsonEncode(data);
       final response = await http
           .post(Uri.parse(url + urlLogin),
