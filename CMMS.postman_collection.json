@@ -1,0 +1,203 @@
+{
+	"info": {
+		"_postman_id": "4f261eb3-1041-4d88-aed7-58237d8ae694",
+		"name": "CMMS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "AUTH",
+			"item": [
+				{
+					"name": "LOGIN",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET MENU",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/getMenu",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"getMenu"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PLC",
+			"item": [
+				{
+					"name": "LOGIN",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Username\" : \"CKR SSM\",\r\n    \"Password\" : \"12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:2035/api/plc/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "2035",
+							"path": [
+								"api",
+								"plc",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET MACHINES",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"UserLogin\" : \"CKR SSM\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:2035/api/plc/get-machines",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "2035",
+							"path": [
+								"api",
+								"plc",
+								"get-machines"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET LIST STATUS",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:2035/api/plc/list-status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "2035",
+							"path": [
+								"api",
+								"plc",
+								"list-status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CHECK STATUS",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ipAddress\" : \"10.41.46.177\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:2035/api/plc/check-status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "2035",
+							"path": [
+								"api",
+								"plc",
+								"check-status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CHANGE STATUS",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ipAddress\" : \"10.41.46.177\",\r\n    \"status\" : 40\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:2035/api/plc/change-status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "2035",
+							"path": [
+								"api",
+								"plc",
+								"change-status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
