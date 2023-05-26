@@ -1,11 +1,16 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
+import 'package:chat/controllers/ctrl_auth.dart';
+import 'package:chat/helpers/constant.dart';
+import 'package:chat/models/model_response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:chat/pages/page_layout.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../api/api_services.dart';
 import '../style/color.dart';
 import 'widgets/widget_progress.dart';
 import 'widgets/widget_snackbar.dart';
@@ -18,14 +23,17 @@ class PageLogin extends StatefulWidget {
 }
 
 class _PageLoginState extends State<PageLogin> {
-  TextEditingController ctrlUser = TextEditingController();
-  final ApiService _apiService = ApiService();
+  CtrlAuth ctrlAuth = Get.put(CtrlAuth());
+  TextEditingController ctrlEmail = TextEditingController();
+  TextEditingController ctrlPassword = TextEditingController();
   Timer? timer;
   Color conColor = ColorsTheme.hijau;
 
   checkMandatory() {
-    if (ctrlUser.text.isEmpty) {
-      return "Silakan isi Username";
+    if (ctrlEmail.text.isEmpty) {
+      return "Please enter email";
+    } else if (ctrlPassword.text.isEmpty) {
+      return "Please enter password";
     } else {
       return "";
     }
@@ -54,7 +62,6 @@ class _PageLoginState extends State<PageLogin> {
   @override
   void initState() {
     super.initState();
-    ctrlUser.text = 'CKR SSM';
     timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => checkConnection());
   }
 
@@ -95,15 +102,15 @@ class _PageLoginState extends State<PageLogin> {
                       children: <Widget>[
                         Center(
                           child: Image.asset(
-                            "assets/images/launcher.jpg",
+                            "assets/images/launcher.png",
                             fit: BoxFit.cover,
                             width: MediaQuery.of(context).size.width * 0.7,
                           ),
                         ),
-                        const Center(
+                        Center(
                           child: Text(
-                            "EOEE",
-                            style: TextStyle(fontFamily: 'BalsamiqSans', fontSize: 22, fontWeight: FontWeight.bold),
+                            Constant.appName,
+                            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                           ),
                         ),
                         SizedBox(
@@ -128,8 +135,38 @@ class _PageLoginState extends State<PageLogin> {
                                   ),
                                   Expanded(
                                     child: TextField(
-                                      controller: ctrlUser,
-                                      decoration: const InputDecoration(border: InputBorder.none, hintText: 'Username'),
+                                      controller: ctrlEmail,
+                                      decoration: const InputDecoration(border: InputBorder.none, hintText: 'Email'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.01,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 32, right: 32),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: ColorsTheme.background2,
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8, right: 8),
+                              child: Row(
+                                children: <Widget>[
+                                  const Icon(Icons.lock),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: ctrlPassword,
+                                      obscureText: true,
+                                      decoration: const InputDecoration(border: InputBorder.none, hintText: 'Password'),
                                     ),
                                   ),
                                 ],
@@ -146,32 +183,20 @@ class _PageLoginState extends State<PageLogin> {
                             width: MediaQuery.of(context).size.width,
                             child: SizedBox(
                               height: MediaQuery.of(context).size.height * 0.06,
-                              // ignore: deprecated_member_use
                               child: ElevatedButton(
-                                onPressed: () {
-                                  String check = checkMandatory();
-                                  if (check == "") {
-                                    showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (BuildContext context) => const WidgetProgressSubmit());
-                                    _apiService.apiLogin(ctrlUser.text).then((res) async {
-                                      Navigator.of(context, rootNavigator: true).pop();
-                                      FocusScope.of(context).requestFocus(FocusNode());
-                                      if (res.status) {
-                                        WidgetSnackbar(context: context, message: res.remarks, warna: "hijau");
-                                        await setSession(res.user!.userName);
-                                        // ignore: use_build_context_synchronously
-                                        Navigator.of(context).pushAndRemoveUntil(
-                                            MaterialPageRoute(builder: (context) => const PageLayout()),
-                                            (Route<dynamic> route) => false);
-                                      } else {
-                                        WidgetSnackbar(context: context, message: res.remarks, warna: "merah");
-                                      }
-                                    });
+                                onPressed: () async {
+                                  showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (BuildContext context) => const WidgetProgressSubmit());
+                                  GlobalResponse res = await ctrlAuth.actionSignIn(ctrlEmail.text, ctrlPassword.text);
+                                  FocusScope.of(context).requestFocus(FocusNode());
+                                  if (res.status) {
+                                    Navigator.of(context).pushAndRemoveUntil(
+                                        MaterialPageRoute(builder: (context) => const PageLayout()),
+                                        (Route<dynamic> route) => false);
                                   } else {
-                                    FocusScope.of(context).requestFocus(FocusNode());
-                                    WidgetSnackbar(context: context, message: check, warna: "merah");
+                                    WidgetSnackbar(context: context, message: res.remarks, warna: "merah");
                                   }
                                 },
                                 style: ButtonStyle(

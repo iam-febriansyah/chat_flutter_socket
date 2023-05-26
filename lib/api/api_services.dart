@@ -7,21 +7,26 @@ import 'package:chat/controllers/ctrl.dart';
 import '../models/model_response.dart';
 
 class ApiService {
-  Ctrl ctrl = Get.put(Ctrl());
-  static const String urlLogin = "/api/plc/login";
-  static const String urlGetMachines = "/api/plc/get-machines";
-  static const String urlCheckCon = "/api/plc/check-status";
-  static const String urlChangeStatus = "/api/plc/change-status";
-  static const String urlStatusMachine = "/api/plc/list-status";
+  var url = Get.put(Ctrl()).httpMainUrl;
+  static const String urlSignUp = "/auth/sign-up";
+  static const String urlSignIn = "/auth/sign-in";
+  static const String urlForgotPassword = "/auth/forgot-password";
+  static const String urlChangeForgotPassword = "/auth/change-forgot-password";
+  static const String urlChangePassword = "/auth/change-password";
+  static const String urlEditAccount = "/auth/edit-account";
 
-  Future<GlobalResponse> apiLogin(String username) async {
+  static const String urlChatListUser = "/chat/list-user";
+  static const String urlChatListChatUser = "/chat/list-chat-user";
+  static const String urlChatSendMessage = "/chat/send-message";
+  static const String urlChatDeleteMssage = "/chat/delete-message";
+
+  Future<GlobalResponse> fetchPost(String endPoint, dynamic auth, Map data) async {
     try {
-      var url = ctrl.httpMainUrl;
-      Map data = {"Username": username};
       var body = jsonEncode(data);
       final response = await http
-          .post(Uri.parse(url + urlLogin),
-              headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8'}, body: body)
+          .post(Uri.parse(url + endPoint),
+              headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8', 'Authorization': auth},
+              body: body)
           .timeout(const Duration(seconds: 15),
               onTimeout: () => throw TimeoutException('Can\'t connect in 30 seconds.'));
       if (response.statusCode == 200) {
@@ -29,7 +34,7 @@ class ApiService {
       } else {
         Map<String, dynamic> res = {};
         res['status'] = false;
-        res['remarks'] = 'Failed to post error [Login]';
+        res['remarks'] = 'Failed to post error $endPoint';
         return GlobalResponse.fromJson(res);
       }
     } catch (e) {
@@ -40,21 +45,9 @@ class ApiService {
     }
   }
 
-  Future<GlobalResponse> apiGetMachine(String userlogin) async {
+  Future<GlobalResponse> apiSignup(Map data) async {
     try {
-      var url = ctrl.httpMainUrl;
-      Map data = {"UserLogin": userlogin};
-      var body = jsonEncode(data);
-      final response = await http
-          .post(Uri.parse(url + urlGetMachines),
-              headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8'}, body: body)
-          .timeout(const Duration(seconds: 30),
-              onTimeout: () => throw TimeoutException('Can\'t connect in 30 seconds.'));
-      if (response.statusCode == 200) {
-        return GlobalResponse.fromJson(jsonDecode(response.body));
-      } else {
-        throw Exception('Failed to post error [Get-Machine]');
-      }
+      return await fetchPost(urlSignUp, '', data);
     } catch (e) {
       Map<String, dynamic> res = {};
       res['status'] = false;
@@ -63,17 +56,9 @@ class ApiService {
     }
   }
 
-  Future<GlobalResponse> apiStatusMachine() async {
+  Future<GlobalResponse> apiSignin(Map data) async {
     try {
-      var url = ctrl.httpMainUrl;
-      final response = await http.post(Uri.parse(url + urlStatusMachine), headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8'
-      }).timeout(const Duration(seconds: 30), onTimeout: () => throw TimeoutException('Can\'t connect in 30 seconds.'));
-      if (response.statusCode == 200) {
-        return GlobalResponse.fromJson(jsonDecode(response.body));
-      } else {
-        throw Exception('Failed to post error [Status-Machine]');
-      }
+      return await fetchPost(urlSignIn, '', data);
     } catch (e) {
       Map<String, dynamic> res = {};
       res['status'] = false;
@@ -82,21 +67,9 @@ class ApiService {
     }
   }
 
-  Future<GlobalResponse> apiCheckCon(String ipaddress) async {
+  Future<GlobalResponse> apiForgotPassword(Map data) async {
     try {
-      var url = ctrl.httpMainUrl;
-      Map data = {"ipAddress": ipaddress};
-      var body = jsonEncode(data);
-      final response = await http
-          .post(Uri.parse(url + urlCheckCon),
-              headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8'}, body: body)
-          .timeout(const Duration(seconds: 30),
-              onTimeout: () => throw TimeoutException('Can\'t connect in 30 seconds.'));
-      if (response.statusCode == 200) {
-        return GlobalResponse.fromJson(jsonDecode(response.body));
-      } else {
-        throw Exception('Failed to post error [Check-Connection]');
-      }
+      return await fetchPost(urlForgotPassword, '', data);
     } catch (e) {
       Map<String, dynamic> res = {};
       res['status'] = false;
@@ -105,21 +78,75 @@ class ApiService {
     }
   }
 
-  Future<GlobalResponse> apiChangeStatus(String ipaddress, int status) async {
+  Future<GlobalResponse> apiChangeForgotPassword(Map data) async {
     try {
-      var url = ctrl.httpMainUrl;
-      Map data = {"ipAddress": ipaddress, "status": status};
-      var body = jsonEncode(data);
-      final response = await http
-          .post(Uri.parse(url + urlChangeStatus),
-              headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8'}, body: body)
-          .timeout(const Duration(seconds: 30),
-              onTimeout: () => throw TimeoutException('Can\'t connect in 30 seconds.'));
-      if (response.statusCode == 200) {
-        return GlobalResponse.fromJson(jsonDecode(response.body));
-      } else {
-        throw Exception('Failed to post error [Change-Status]');
-      }
+      return await fetchPost(urlChangeForgotPassword, '', data);
+    } catch (e) {
+      Map<String, dynamic> res = {};
+      res['status'] = false;
+      res['remarks'] = e.toString();
+      return GlobalResponse.fromJson(res);
+    }
+  }
+
+  Future<GlobalResponse> apiChangePassword(Map data, String auth) async {
+    try {
+      return await fetchPost(urlChangePassword, auth, data);
+    } catch (e) {
+      Map<String, dynamic> res = {};
+      res['status'] = false;
+      res['remarks'] = e.toString();
+      return GlobalResponse.fromJson(res);
+    }
+  }
+
+  Future<GlobalResponse> apiEditAccount(Map data, String auth) async {
+    try {
+      return await fetchPost(urlEditAccount, auth, data);
+    } catch (e) {
+      Map<String, dynamic> res = {};
+      res['status'] = false;
+      res['remarks'] = e.toString();
+      return GlobalResponse.fromJson(res);
+    }
+  }
+
+  Future<GlobalResponse> apiChatListUser(Map data, String auth) async {
+    try {
+      return await fetchPost(urlChatListUser, auth, data);
+    } catch (e) {
+      Map<String, dynamic> res = {};
+      res['status'] = false;
+      res['remarks'] = e.toString();
+      return GlobalResponse.fromJson(res);
+    }
+  }
+
+  Future<GlobalResponse> apiChatListChatUser(Map data, String auth) async {
+    try {
+      return await fetchPost(urlChatListChatUser, auth, data);
+    } catch (e) {
+      Map<String, dynamic> res = {};
+      res['status'] = false;
+      res['remarks'] = e.toString();
+      return GlobalResponse.fromJson(res);
+    }
+  }
+
+  Future<GlobalResponse> apiChatSendMessage(Map data, String auth) async {
+    try {
+      return await fetchPost(urlChatSendMessage, auth, data);
+    } catch (e) {
+      Map<String, dynamic> res = {};
+      res['status'] = false;
+      res['remarks'] = e.toString();
+      return GlobalResponse.fromJson(res);
+    }
+  }
+
+  Future<GlobalResponse> apiChatDeleteMessage(Map data, String auth) async {
+    try {
+      return await fetchPost(urlChatDeleteMssage, auth, data);
     } catch (e) {
       Map<String, dynamic> res = {};
       res['status'] = false;

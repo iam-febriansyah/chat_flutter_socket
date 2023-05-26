@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'controllers/ctrl.dart';
+import 'helpers/constant.dart';
 import 'pages/page_splashscreen.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(debugShowCheckedModeBanner: false, title: 'EOEE', home: SplashScreen());
+    return MaterialApp(debugShowCheckedModeBanner: false, title: Constant.appName, home: const SplashScreen());
   }
 }
 

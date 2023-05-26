@@ -6,6 +6,7 @@ import 'package:chat/pages/page_layout.dart';
 import 'package:chat/pages/page_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helpers/constant.dart';
 import '../style/color.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -58,11 +59,11 @@ class _SplashScreenState extends State<SplashScreen> {
                       alignment: Alignment.center,
                       child: SizedBox(
                           width: MediaQuery.of(context).size.width * 0.4,
-                          child: Image.asset("assets/images/launcher.jpg"))),
-                  const Text(
-                    "EOEE",
+                          child: Image.asset("assets/images/launcher.png"))),
+                  Text(
+                    Constant.appName,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: ColorsTheme.text1,
                       fontSize: 42,
                       fontFamily: "Sansation Light",
@@ -70,10 +71,10 @@ class _SplashScreenState extends State<SplashScreen> {
                     ),
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-                  const Text(
-                    "Powered by\nPT. Musashi Auto Parts Indonesia",
+                  Text(
+                    "Powered by\n${Constant.yourCompany}",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: ColorsTheme.text1,
                       fontSize: 12,
                       fontFamily: "Sansation Light",

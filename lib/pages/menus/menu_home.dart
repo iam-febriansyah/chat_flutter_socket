@@ -92,82 +92,82 @@ class _PageMenuHomeState extends State<PageMenuHome> {
   }
 
   void getDataStatus() async {
-    if (mounted) {
-      setState(() {
-        loading = true;
-      });
-    }
-    await _apiService.apiStatusMachine().then((res) async {
-      if (res.status) {
-        await getMachine();
-        if (mounted) {
-          dataStatus = [];
-          setState(() {
-            for (var e in res.statusMachines!) {
-              if (e.show) {
-                dataStatus.add(StatusMachine(
-                    id: e.id,
-                    address: e.address,
-                    status: e.status,
-                    show: e.show,
-                    color: e.color,
-                    fontcolor: e.fontcolor));
-              }
-            }
-          });
-        }
-      } else {
-        WidgetSnackbar(context: context, message: res.remarks, warna: "merah");
-      }
-    });
-    if (mounted) {
-      setState(() {
-        loading = false;
-      });
-    }
+    // if (mounted) {
+    //   setState(() {
+    //     loading = true;
+    //   });
+    // }
+    // await _apiService.apiStatusMachine().then((res) async {
+    //   if (res.status) {
+    //     await getMachine();
+    //     if (mounted) {
+    //       dataStatus = [];
+    //       setState(() {
+    //         for (var e in res.statusMachines!) {
+    //           if (e.show) {
+    //             dataStatus.add(StatusMachine(
+    //                 id: e.id,
+    //                 address: e.address,
+    //                 status: e.status,
+    //                 show: e.show,
+    //                 color: e.color,
+    //                 fontcolor: e.fontcolor));
+    //           }
+    //         }
+    //       });
+    //     }
+    //   } else {
+    //     WidgetSnackbar(context: context, message: res.remarks, warna: "merah");
+    //   }
+    // });
+    // if (mounted) {
+    //   setState(() {
+    //     loading = false;
+    //   });
+    // }
   }
 
   Future getMachine() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    await _apiService.apiGetMachine(preferences.getString("PREF_USERNAME")!).then((res) {
-      if (res.status) {
-        if (mounted) {
-          setState(() {
-            for (var e in res.machines!) {
-              dataMachine.add(GeneralList(id: e.id.toString(), title: e.noMesin, subtitle: e.ipAddress));
-            }
-          });
-        }
-      } else {
-        WidgetSnackbar(context: context, message: res.remarks, warna: "merah");
-      }
-    });
-    return;
+    // SharedPreferences preferences = await SharedPreferences.getInstance();
+    // await _apiService.apiGetMachine(preferences.getString("PREF_USERNAME")!).then((res) {
+    //   if (res.status) {
+    //     if (mounted) {
+    //       setState(() {
+    //         for (var e in res.machines!) {
+    //           dataMachine.add(GeneralList(id: e.id.toString(), title: e.noMesin, subtitle: e.ipAddress));
+    //         }
+    //       });
+    //     }
+    //   } else {
+    //     WidgetSnackbar(context: context, message: res.remarks, warna: "merah");
+    //   }
+    // });
+    // return;
   }
 
   void getStatusMachine() async {
-    await _apiService.apiCheckCon(ipaddress).then((res) {
-      if (!res.status) {
-        // WidgetSnackbar(context: context, message: res.remarks, warna: "merah");
-      } else {
-        connectAndListen();
-      }
-    });
+    // await _apiService.apiCheckCon(ipaddress).then((res) {
+    //   if (!res.status) {
+    //     // WidgetSnackbar(context: context, message: res.remarks, warna: "merah");
+    //   } else {
+    //     connectAndListen();
+    //   }
+    // });
   }
 
   void changeStatusMachine(String ipaddress, int status) async {
-    showDialog(
-        context: context, barrierDismissible: false, builder: (BuildContext context) => const WidgetProgressSubmit());
-    await _apiService.apiChangeStatus(ipaddress, status).then((res) {
-      Navigator.of(context, rootNavigator: true).pop();
-      if (!res.status) {
-        WidgetSnackbar(context: context, message: res.remarks, warna: "merah");
-      } else {
-        print(res.remarks);
-        WidgetSnackbar(context: context, message: res.remarks, warna: "hijau");
-      }
-      getStatusMachine();
-    });
+    // showDialog(
+    //     context: context, barrierDismissible: false, builder: (BuildContext context) => const WidgetProgressSubmit());
+    // await _apiService.apiChangeStatus(ipaddress, status).then((res) {
+    //   Navigator.of(context, rootNavigator: true).pop();
+    //   if (!res.status) {
+    //     WidgetSnackbar(context: context, message: res.remarks, warna: "merah");
+    //   } else {
+    //     print(res.remarks);
+    //     WidgetSnackbar(context: context, message: res.remarks, warna: "hijau");
+    //   }
+    //   getStatusMachine();
+    // });
   }
 
   int setColor(hexColor) {
