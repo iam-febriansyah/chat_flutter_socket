@@ -4,6 +4,10 @@
 
 import 'dart:convert';
 
+import 'package:chat/models/model_chat.dart';
+
+import 'model_user.dart';
+
 GlobalResponse globalResponseFromJson(String str) => GlobalResponse.fromJson(json.decode(str));
 
 String globalResponseToJson(GlobalResponse data) => json.encode(data.toJson());
@@ -11,119 +15,35 @@ String globalResponseToJson(GlobalResponse data) => json.encode(data.toJson());
 class GlobalResponse {
   bool status;
   String remarks;
+  String? token;
   User? user;
-  List<Machine>? machines;
-  List<StatusMachine>? statusMachines;
+  List<User>? userList;
+  List<Chat>? chats;
+  UserDetail? userDetail;
 
   GlobalResponse({
     required this.status,
     required this.remarks,
+    this.token,
     this.user,
-    this.machines,
-    this.statusMachines,
+    this.userList,
+    this.chats,
+    this.userDetail,
   });
 
   factory GlobalResponse.fromJson(Map<String, dynamic> json) => GlobalResponse(
         status: json["status"],
         remarks: json["remarks"],
+        token: json["token"] ?? '',
         user: json["user"] != null ? User.fromJson(json["user"]) : null,
-        machines: json["machines"] != null ? List<Machine>.from(json["machines"].map((x) => Machine.fromJson(x))) : [],
-        statusMachines: json["list_status"] != null
-            ? List<StatusMachine>.from(json["list_status"].map((x) => StatusMachine.fromJson(x)))
-            : [],
+        userDetail: json["user_detail"] != null ? UserDetail.fromJson(json["user_detail"]) : null,
+        userList: json["user_list"] != null ? List<User>.from(json["user_list"].map((x) => User.fromJson(x))) : [],
+        chats: json["chats"] != null ? List<Chat>.from(json["chats"].map((x) => Chat.fromJson(x))) : [],
       );
 
   Map<String, dynamic> toJson() => {
         "status": status,
         "remarks": remarks,
-      };
-}
-
-class User {
-  int id;
-  String userName;
-  String password;
-
-  User({
-    required this.id,
-    required this.userName,
-    required this.password,
-  });
-
-  factory User.fromJson(Map<String, dynamic> json) => User(
-        id: json["Id"],
-        userName: json["UserName"],
-        password: json["Password"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "Id": id,
-        "UserName": userName,
-        "Password": password,
-      };
-}
-
-class Machine {
-  int id;
-  String userLogin;
-  String noMesin;
-  String ipAddress;
-
-  Machine({
-    required this.id,
-    required this.userLogin,
-    required this.noMesin,
-    required this.ipAddress,
-  });
-
-  factory Machine.fromJson(Map<String, dynamic> json) => Machine(
-        id: json["Id"],
-        userLogin: json["UserLogin"],
-        noMesin: json["NoMesin"],
-        ipAddress: json["IPAddress"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "Id": id,
-        "UserLogin": userLogin,
-        "NoMesin": noMesin,
-        "IPAddress": ipAddress,
-      };
-}
-
-class StatusMachine {
-  int id;
-  int address;
-  String status;
-  bool show;
-  String color;
-  String fontcolor;
-
-  StatusMachine({
-    required this.id,
-    required this.address,
-    required this.status,
-    required this.show,
-    required this.color,
-    required this.fontcolor,
-  });
-
-  factory StatusMachine.fromJson(Map<String, dynamic> json) => StatusMachine(
-        id: json["id"],
-        address: json["address"],
-        status: json["status"],
-        show: json["show"],
-        color: json["color"],
-        fontcolor: json["fontcolor"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "address": address,
-        "status": status,
-        "show": show,
-        "color": color,
-        "fontcolor": fontcolor,
       };
 }
 

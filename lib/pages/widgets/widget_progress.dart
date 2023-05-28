@@ -17,10 +17,10 @@ class WidgetProgressSubmit extends StatelessWidget {
         backgroundColor: Colors.white,
         child: Container(
           padding: const EdgeInsets.all(16),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min, // To make the card compact
             children: <Widget>[
-              SizedBox(
+              const SizedBox(
                   height: 30,
                   child: Padding(
                     padding: EdgeInsets.only(right: 16),
@@ -33,9 +33,9 @@ class WidgetProgressSubmit extends StatelessWidget {
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
+                children: const <Widget>[
                   Text(
-                    "Mohon Tunggu...",
+                    "Please wait...",
                     style: TextStyle(
                       color: ColorsTheme.text1,
                       fontSize: 16.0,
@@ -45,7 +45,7 @@ class WidgetProgressSubmit extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(top: 4),
                     child: Text(
-                      "Sedang memproses data",
+                      "Processing data",
                       style: TextStyle(
                         color: ColorsTheme.text2,
                         fontSize: 14.0,

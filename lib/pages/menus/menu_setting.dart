@@ -2,11 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:chat/pages/page_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../controllers/ctrl.dart';
 import '../../style/color.dart';
+import '../auth/page_signin.dart';
 import '../widgets/widget_snackbar.dart';
 
 Ctrl ctrl = Get.put(Ctrl());
@@ -19,14 +19,15 @@ class PageMenuSetting extends StatefulWidget {
 }
 
 class _PageMenuSettingState extends State<PageMenuSetting> {
+  Ctrl ctrl = Get.put(Ctrl());
   TextEditingController ctrlDomainIP = TextEditingController();
   TextEditingController ctrlPort = TextEditingController();
 
   Future<void> logout() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
+    // ctrl.delSocketUser(preferences.getString("PREF_USER_ID"));
     preferences.clear();
-    Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const PageLogin()), (Route<dynamic> route) => false);
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const PageSignIn()), (Route<dynamic> route) => false);
   }
 
   void save() async {
@@ -37,7 +38,6 @@ class _PageMenuSettingState extends State<PageMenuSetting> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.setString("PREF_DOMAINIP", ctrlDomainIP.text);
     preferences.setString("PREF_PORT", ctrlPort.text);
-    ctrl.getPref();
   }
 
   @override

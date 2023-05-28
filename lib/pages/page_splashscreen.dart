@@ -1,13 +1,15 @@
 import 'dart:async';
 
+import 'package:chat/controllers/ctrl.dart';
+import 'package:chat/controllers/ctrl_socket.dart';
+import 'package:chat/helpers/constant.dart';
+import 'package:chat/pages/auth/page_signin.dart';
+import 'package:chat/style/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:chat/pages/page_layout.dart';
-import 'package:chat/pages/page_login.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../helpers/constant.dart';
-import '../style/color.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,18 +20,18 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  CtrlSocket ctrl = Get.put(CtrlSocket());
   bool connected = true;
 
   getData() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     var duration = const Duration(seconds: 3);
     return Timer(duration, () async {
-      if (preferences.getString("PREF_USERNAME") == null || preferences.getString("PREF_USERNAME") == "") {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const PageLogin()), (Route<dynamic> route) => false);
+      if (preferences.getString("PREF_TOKEN") == null || preferences.getString("PREF_TOKEN") == "") {
+        Get.offAll(const PageSignIn());
       } else {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const PageLayout()), (Route<dynamic> route) => false);
+        Get.offAll(const PageLayout());
+        ctrl.setSocketUser(preferences.getString("PREF_USER_ID"));
       }
     });
   }
@@ -42,8 +44,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light
-        .copyWith(statusBarColor: ColorsTheme.primary1, statusBarBrightness: Brightness.light));
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle.light.copyWith(statusBarColor: ColorsTheme.primary1, statusBarBrightness: Brightness.light));
     return Scaffold(
         body: Container(
             width: MediaQuery.of(context).size.width * 1,
@@ -57,9 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   SizedBox(height: MediaQuery.of(context).size.height * 0.25),
                   Align(
                       alignment: Alignment.center,
-                      child: SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          child: Image.asset("assets/images/launcher.png"))),
+                      child: SizedBox(width: MediaQuery.of(context).size.width * 0.4, child: Image.asset("assets/images/launcher.png"))),
                   Text(
                     Constant.appName,
                     textAlign: TextAlign.center,

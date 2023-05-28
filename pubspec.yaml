@@ -48,6 +48,12 @@ dependencies:
   shared_preferences: ^2.1.1
   # persistent_bottom_nav_bar: ^5.0.2
   get: ^4.6.5
+  shimmer: ^3.0.0
+  path_provider: any
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  focus_detector: ^2.0.1
+
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +66,8 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
   flutter_launcher_icons: ^0.13.1
+  build_runner: ^2.3.3
+  hive_generator: ^2.0.0
 
 flutter_icons:
   android: true
