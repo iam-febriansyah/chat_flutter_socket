@@ -35,7 +35,7 @@ class WidgetProgressSubmit extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    "Mohon Tunggu...",
+                    "Please wait...",
                     style: TextStyle(
                       color: ColorsTheme.text1,
                       fontSize: 16.0,
@@ -45,7 +45,7 @@ class WidgetProgressSubmit extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(top: 4),
                     child: Text(
-                      "Sedang memproses data",
+                      "Processing data",
                       style: TextStyle(
                         color: ColorsTheme.text2,
                         fontSize: 14.0,

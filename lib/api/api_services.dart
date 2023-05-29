@@ -1,12 +1,17 @@
+// ignore_for_file: unnecessary_brace_in_string_interps, use_build_context_synchronously, avoid_print
+
 import 'dart:async';
 import 'dart:convert';
+import 'package:chat/models/model_response.dart';
+import 'package:chat/pages/auth/page_signin.dart';
+import 'package:chat/pages/widgets/widget_snackbar.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:chat/controllers/ctrl.dart';
 
-import '../models/model_response.dart';
-
 class ApiService {
+  int timeOut = 30;
   var url = Get.put(Ctrl()).httpMainUrl;
   static const String urlSignUp = "/auth/sign-up";
   static const String urlSignIn = "/auth/sign-in";
@@ -20,17 +25,24 @@ class ApiService {
   static const String urlChatSendMessage = "/chat/send-message";
   static const String urlChatDeleteMssage = "/chat/delete-message";
 
-  Future<GlobalResponse> fetchPost(String endPoint, dynamic auth, Map data) async {
+  Future<GlobalResponse> fetchPost(BuildContext ctx, String endPoint, dynamic auth, Map data) async {
     try {
       var body = jsonEncode(data);
       final response = await http
           .post(Uri.parse(url + endPoint),
               headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8', 'Authorization': auth},
               body: body)
-          .timeout(const Duration(seconds: 15),
-              onTimeout: () => throw TimeoutException('Can\'t connect in 30 seconds.'));
+          .timeout(Duration(seconds: timeOut),
+              onTimeout: () => throw TimeoutException('Can\'t connect in ${timeOut} seconds.'));
       if (response.statusCode == 200) {
-        return GlobalResponse.fromJson(jsonDecode(response.body));
+        // print(response.body);
+        GlobalResponse res = GlobalResponse.fromJson(jsonDecode(response.body));
+        if (res.remarks == 'Unauthorized') {
+          Get.offAll(const PageSignIn());
+          res.remarks = "You'r Unauthorized, please Sign In again";
+          WidgetSnackbar(context: ctx, message: res.remarks, warna: "merah");
+        }
+        return res;
       } else {
         Map<String, dynamic> res = {};
         res['status'] = false;
@@ -45,9 +57,9 @@ class ApiService {
     }
   }
 
-  Future<GlobalResponse> apiSignup(Map data) async {
+  Future<GlobalResponse> apiSignup(BuildContext ctx, Map data) async {
     try {
-      return await fetchPost(urlSignUp, '', data);
+      return await fetchPost(ctx, urlSignUp, '', data);
     } catch (e) {
       Map<String, dynamic> res = {};
       res['status'] = false;
@@ -56,9 +68,9 @@ class ApiService {
     }
   }
 
-  Future<GlobalResponse> apiSignin(Map data) async {
+  Future<GlobalResponse> apiSignin(BuildContext ctx, Map data) async {
     try {
-      return await fetchPost(urlSignIn, '', data);
+      return await fetchPost(ctx, urlSignIn, '', data);
     } catch (e) {
       Map<String, dynamic> res = {};
       res['status'] = false;
@@ -67,9 +79,9 @@ class ApiService {
     }
   }
 
-  Future<GlobalResponse> apiForgotPassword(Map data) async {
+  Future<GlobalResponse> apiForgotPassword(BuildContext ctx, Map data) async {
     try {
-      return await fetchPost(urlForgotPassword, '', data);
+      return await fetchPost(ctx, urlForgotPassword, '', data);
     } catch (e) {
       Map<String, dynamic> res = {};
       res['status'] = false;
@@ -78,9 +90,9 @@ class ApiService {
     }
   }
 
-  Future<GlobalResponse> apiChangeForgotPassword(Map data) async {
+  Future<GlobalResponse> apiChangeForgotPassword(BuildContext ctx, Map data) async {
     try {
-      return await fetchPost(urlChangeForgotPassword, '', data);
+      return await fetchPost(ctx, urlChangeForgotPassword, '', data);
     } catch (e) {
       Map<String, dynamic> res = {};
       res['status'] = false;
@@ -89,9 +101,9 @@ class ApiService {
     }
   }
 
-  Future<GlobalResponse> apiChangePassword(Map data, String auth) async {
+  Future<GlobalResponse> apiChangePassword(BuildContext ctx, Map data, String auth) async {
     try {
-      return await fetchPost(urlChangePassword, auth, data);
+      return await fetchPost(ctx, urlChangePassword, auth, data);
     } catch (e) {
       Map<String, dynamic> res = {};
       res['status'] = false;
@@ -100,9 +112,9 @@ class ApiService {
     }
   }
 
-  Future<GlobalResponse> apiEditAccount(Map data, String auth) async {
+  Future<GlobalResponse> apiEditAccount(BuildContext ctx, Map data, String auth) async {
     try {
-      return await fetchPost(urlEditAccount, auth, data);
+      return await fetchPost(ctx, urlEditAccount, auth, data);
     } catch (e) {
       Map<String, dynamic> res = {};
       res['status'] = false;
@@ -111,9 +123,9 @@ class ApiService {
     }
   }
 
-  Future<GlobalResponse> apiChatListUser(Map data, String auth) async {
+  Future<GlobalResponse> apiChatListUser(BuildContext ctx, Map data, String auth) async {
     try {
-      return await fetchPost(urlChatListUser, auth, data);
+      return await fetchPost(ctx, urlChatListUser, auth, data);
     } catch (e) {
       Map<String, dynamic> res = {};
       res['status'] = false;
@@ -122,9 +134,9 @@ class ApiService {
     }
   }
 
-  Future<GlobalResponse> apiChatListChatUser(Map data, String auth) async {
+  Future<GlobalResponse> apiChatListChatUser(BuildContext ctx, Map data, String auth) async {
     try {
-      return await fetchPost(urlChatListChatUser, auth, data);
+      return await fetchPost(ctx, urlChatListChatUser, auth, data);
     } catch (e) {
       Map<String, dynamic> res = {};
       res['status'] = false;
@@ -133,9 +145,9 @@ class ApiService {
     }
   }
 
-  Future<GlobalResponse> apiChatSendMessage(Map data, String auth) async {
+  Future<GlobalResponse> apiChatSendMessage(BuildContext ctx, Map data, String auth) async {
     try {
-      return await fetchPost(urlChatSendMessage, auth, data);
+      return await fetchPost(ctx, urlChatSendMessage, auth, data);
     } catch (e) {
       Map<String, dynamic> res = {};
       res['status'] = false;
@@ -144,9 +156,9 @@ class ApiService {
     }
   }
 
-  Future<GlobalResponse> apiChatDeleteMessage(Map data, String auth) async {
+  Future<GlobalResponse> apiChatDeleteMessage(BuildContext ctx, Map data, String auth) async {
     try {
-      return await fetchPost(urlChatDeleteMssage, auth, data);
+      return await fetchPost(ctx, urlChatDeleteMssage, auth, data);
     } catch (e) {
       Map<String, dynamic> res = {};
       res['status'] = false;

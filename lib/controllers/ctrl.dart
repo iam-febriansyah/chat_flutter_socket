@@ -2,9 +2,10 @@
 
 import 'dart:async';
 
+import 'package:chat/style/color.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:chat/helpers/constant.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Ctrl extends GetxController {
   String domainIP = Constant.domainIP;
@@ -12,20 +13,22 @@ class Ctrl extends GetxController {
   String mainUrl = Constant.mainUrl;
   String httpMainUrl = Constant.httpMainUrl;
   Timer? timer;
+  bool isConnected = true;
+  Color conColor = ColorsTheme.hijau;
 
-  void getPref() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    domainIP = pref.getString("PREF_DOMAINIP") ?? Constant.domainIP;
-    port = pref.getString("PREF_PORT") ?? Constant.port;
-    mainUrl = port == "" ? domainIP : "$domainIP:$port";
-    httpMainUrl = "http://$mainUrl";
+  void updateCon(bool s) async {
+    isConnected = s;
+    if (!s) {
+      conColor = ColorsTheme.merah;
+    } else {
+      conColor = ColorsTheme.hijau;
+    }
     update();
   }
 
   @override
   void onInit() async {
     super.onInit();
-    timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => getPref());
   }
 
   @override

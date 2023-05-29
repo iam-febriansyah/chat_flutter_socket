@@ -1,8 +1,7 @@
+import 'package:chat/models/model_response.dart';
+import 'package:chat/style/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../models/model_response.dart';
-import '../style/color.dart';
 
 class PageList extends StatefulWidget {
   final List<GeneralList> datas;
