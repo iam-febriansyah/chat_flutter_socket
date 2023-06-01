@@ -96,7 +96,7 @@ class _PageMenuHomeState extends State<PageMenuHome> {
             Container(
               height: 50,
               width: 50,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.primaries[generatedColor]),
+              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.primaries[user.color ?? generatedColor]),
               child: Center(
                   child: Text(
                 initial,
