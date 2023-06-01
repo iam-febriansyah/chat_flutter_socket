@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "co.id.musashi" "\0"
-            VALUE "FileDescription", "kanagata" "\0"
+            VALUE "CompanyName", "dev.febriansyah" "\0"
+            VALUE "FileDescription", "chat" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "kanagata" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2023 co.id.musashi. All rights reserved." "\0"
-            VALUE "OriginalFilename", "kanagata.exe" "\0"
-            VALUE "ProductName", "kanagata" "\0"
+            VALUE "InternalName", "chat" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2023 dev.febriansyah. All rights reserved." "\0"
+            VALUE "OriginalFilename", "chat.exe" "\0"
+            VALUE "ProductName", "chat" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

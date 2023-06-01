@@ -1,4 +1,4 @@
-package co.id.musashi.kanagata
+package chat.febriansyah.dev
 
 import io.flutter.embedding.android.FlutterActivity
 
