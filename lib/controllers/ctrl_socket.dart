@@ -17,15 +17,16 @@ class CtrlSocket extends GetxController {
     update();
   }
 
-  void setSocketUser(userId) async {
+  void setSocketMe(userId) async {
     socket!.on('sendMessage_$userId', (data) {
-      print(data);
       updateChatSocket(data);
     });
     socket!.on('readMessage_$userId', (data) {
       updateChatSocket(data);
     });
-    socket!.emit('online_$userId', "okkk");
+    socket!.on('bot_$userId', (data) {
+      updateChatSocket(data);
+    });
     update();
   }
 
@@ -35,8 +36,7 @@ class CtrlSocket extends GetxController {
     socket!.on('online_$userId', (data) {
       updateUserSocket(data, userId);
     });
-    socket!.on('typing_' + userId + '_' + meUserId, (data) {
-      // user_id is writer, meUserId is receiver, data is typing
+    socket!.on('typing_' + meUserId + '_' + userId, (data) {
       updateUserSocket(data, userId);
     });
     update();
@@ -81,6 +81,7 @@ class CtrlSocket extends GetxController {
   }
 
   void delSocketUser(userId) async {
+    socket!.emit('online_$userId', 'Logout');
     socket!.off('sendMessage_$userId');
     socket!.off('readMessage_$userId');
     socket!.disconnect();
@@ -89,7 +90,7 @@ class CtrlSocket extends GetxController {
 
   void emitStatusOnline(String status) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    String userId = pref.getString("PREF_USER_ID")!;
+    String userId = pref.getString("PREF_USER_ID") ?? '';
     if (!isTyping(userId)) {
       socket!.emit('online_$userId', status);
     }
@@ -97,13 +98,14 @@ class CtrlSocket extends GetxController {
 
   void emitTyping(String toUserId, String typing) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    String userId = pref.getString("PREF_USER_ID")!;
+    String userId = pref.getString("PREF_USER_ID") ?? '';
     Map<String, dynamic> data = {};
     data['to_user_id'] = userId;
     data['message'] = typing;
     if (typing == '') {
       listTyping.remove(userId);
       update();
+      emitStatusOnline("Online");
     } else {
       String cek = listTyping.firstWhere((e) => e == userId, orElse: () => '');
       if (cek == '') {

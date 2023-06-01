@@ -12,8 +12,6 @@ import 'package:chat/sql/models/02_user.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:chat/style/color.dart';
-// ignore: library_prefixes
-// import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 Ctrl ctrl = Get.put(Ctrl());
 
@@ -30,8 +28,10 @@ class _PageMenuHomeState extends State<PageMenuHome> {
 
   void getDataUser() async {
     GlobalResponse res = await ctrlChat.actionListUser(context, page);
-    if (!res.status) {
-      WidgetSnackbar(context: context, message: res.remarks, warna: "merah");
+    if (mounted) {
+      if (!res.status) {
+        WidgetSnackbar(context: context, message: res.remarks, warna: "merah");
+      }
     }
   }
 
@@ -71,7 +71,7 @@ class _PageMenuHomeState extends State<PageMenuHome> {
   }
 
   Widget cardUser(SqlUser user) {
-    var generatedColor = Random().nextInt(Colors.primaries.length);
+    int generatedColor = Random().nextInt(Colors.primaries.length);
     String initial = '';
     String fullname = user.fullname;
     for (var i in fullname.split(" ")) {

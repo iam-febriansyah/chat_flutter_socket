@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:focus_detector/focus_detector.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'controllers/ctrl.dart';
 import 'helpers/constant.dart';
 import 'pages/page_splashscreen.dart';
@@ -50,13 +51,17 @@ class _MyAppState extends State<MyApp> {
   String status = '';
   Timer? timer;
 
-  void checkStatus(String sts) {
+  void checkStatus(String sts) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String userId = pref.getString("PREF_USER_ID") ?? '';
     if (sts != '') {
       setState(() {
         status = sts;
       });
     }
-    ctrlSocket.emitStatusOnline(status);
+    if (userId != '') {
+      ctrlSocket.emitStatusOnline(status);
+    }
   }
 
   @override

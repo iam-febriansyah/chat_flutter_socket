@@ -46,7 +46,7 @@ class CtrlAuth extends GetxController {
       var response = await apiService.apiSignin(ctx, data);
       if (response.status) {
         pref.setString("PREF_TOKEN", response.token!);
-        ctrlSocket.setSocketUser(response.user!.userId);
+        ctrlSocket.setSocketMe(response.user!.userId);
         await setPrefSession(response.user!, response.userDetail!);
       }
       isLoadingFalse(ctx, response.status ? '' : response.remarks);
@@ -69,7 +69,8 @@ class CtrlAuth extends GetxController {
     }
   }
 
-  Future<GlobalResponse> actionChangeForgotPassword(BuildContext ctx, String code, String email, String newPassword) async {
+  Future<GlobalResponse> actionChangeForgotPassword(
+      BuildContext ctx, String code, String email, String newPassword) async {
     try {
       isLoadingTrue(ctx);
       Map data = {};

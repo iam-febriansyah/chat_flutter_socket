@@ -1,7 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:chat/controllers/ctrl_socket.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../controllers/ctrl.dart';
@@ -20,14 +22,17 @@ class PageMenuSetting extends StatefulWidget {
 
 class _PageMenuSettingState extends State<PageMenuSetting> {
   Ctrl ctrl = Get.put(Ctrl());
+  CtrlSocket ctrlSocket = Get.put(CtrlSocket());
   TextEditingController ctrlDomainIP = TextEditingController();
   TextEditingController ctrlPort = TextEditingController();
 
   Future<void> logout() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    // ctrl.delSocketUser(preferences.getString("PREF_USER_ID"));
+    ctrlSocket.delSocketUser(preferences.getString("PREF_USER_ID"));
     preferences.clear();
-    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const PageSignIn()), (Route<dynamic> route) => false);
+    Box box = Hive.box("dbChatBox");
+    box.deleteAll(box.keys);
+    Get.offAll(const PageSignIn());
   }
 
   void save() async {

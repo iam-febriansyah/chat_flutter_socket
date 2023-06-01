@@ -22,13 +22,14 @@ class SqlUserAdapter extends TypeAdapter<SqlUser> {
       isOnline: fields[2] as String,
       fullname: fields[3] as String,
       status: fields[4] as String,
+      color: fields[5] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SqlUser obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class SqlUserAdapter extends TypeAdapter<SqlUser> {
       ..writeByte(3)
       ..write(obj.fullname)
       ..writeByte(4)
-      ..write(obj.status);
+      ..write(obj.status)
+      ..writeByte(5)
+      ..write(obj.color);
   }
 
   @override

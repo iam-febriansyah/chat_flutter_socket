@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Get.offAll(const PageSignIn());
       } else {
         Get.offAll(const PageLayout());
-        ctrl.setSocketUser(preferences.getString("PREF_USER_ID"));
+        ctrl.setSocketMe(preferences.getString("PREF_USER_ID"));
       }
     });
   }

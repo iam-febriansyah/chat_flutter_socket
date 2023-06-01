@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:chat/controllers/ctrl.dart';
 import 'package:chat/controllers/ctrl_auth.dart';
+import 'package:chat/controllers/ctrl_socket.dart';
 import 'package:chat/helpers/constant.dart';
 import 'package:chat/models/model_response.dart';
 import 'package:chat/pages/auth/page_forgot_password.dart';
@@ -26,6 +27,7 @@ class PageSignIn extends StatefulWidget {
 class _PageSignInState extends State<PageSignIn> {
   CtrlAuth ctrlAuth = Get.put(CtrlAuth());
   Ctrl ctrl = Get.put(Ctrl());
+  CtrlSocket ctrlSocket = Get.put(CtrlSocket());
   TextEditingController ctrlEmail = TextEditingController();
   TextEditingController ctrlPassword = TextEditingController();
   Timer? timer;
@@ -35,6 +37,7 @@ class _PageSignInState extends State<PageSignIn> {
         context: context, barrierDismissible: false, builder: (BuildContext context) => const WidgetProgressSubmit());
     GlobalResponse res = await ctrlAuth.actionSignIn(context, ctrlEmail.text, ctrlPassword.text);
     if (res.status) {
+      ctrlSocket.socket!.connect();
       Get.offAll(const PageLayout());
     }
     WidgetSnackbar(context: context, message: res.remarks, warna: res.status ? "hijau" : "merah");

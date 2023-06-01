@@ -11,6 +11,8 @@ import 'package:chat/style/color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 class PageChatSingle extends StatefulWidget {
   final SqlUser sqlUser;
@@ -25,8 +27,13 @@ class _PageChatSingleState extends State<PageChatSingle> {
   CtrlSocket ctrlSocket = Get.put(CtrlSocket());
   TextEditingController ctrlTyping = TextEditingController();
   Timer? timer;
+  String myUserId = '';
 
   void getChat(BuildContext ctx) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      myUserId = pref.getString("PREF_USER_ID") ?? '';
+    });
     await ctrlChat.actionListChatUser(ctx, 1, widget.sqlUser.userId);
   }
 
@@ -37,10 +44,13 @@ class _PageChatSingleState extends State<PageChatSingle> {
   void sendMessage(BuildContext ctx) async {
     try {
       DateTime now = DateTime.now();
-      String chatId = '';
+      String chatId = const Uuid().v1();
       String createdAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
       String timeZone = now.timeZoneOffset.toString();
-      ctrlChat.actionSendMessage(ctx, chatId, widget.sqlUser.userId, ctrlTyping.text, '', createdAt, timeZone);
+      if (ctrlTyping.text != '') {
+        ctrlChat.actionSendMessage(ctx, chatId, widget.sqlUser.userId, ctrlTyping.text, '', createdAt, timeZone);
+      }
+      ctrlTyping.text = '';
     } catch (e) {
       print(e.toString());
     }
@@ -57,9 +67,18 @@ class _PageChatSingleState extends State<PageChatSingle> {
   Widget build(BuildContext context) {
     return GetBuilder<CtrlChat>(builder: (ctrl) {
       SqlUser user = ctrl.listUserSql.firstWhere((e) => e.userId == widget.sqlUser.userId);
-      List<SqlChat> listChat = ctrl.listChatSql;
-      listChat.sort((a, b) => a.createdAtServer.compareTo(b.createdAtServer));
+      List<SqlChat> listChat = ctrl.listChatSql
+          .where((e) =>
+              (e.toUserId == widget.sqlUser.userId && e.fromUserId == myUserId) ||
+              (e.toUserId == myUserId && e.fromUserId == widget.sqlUser.userId))
+          .toList();
+      listChat.sort((a, b) => b.createdAt
+          .replaceAll(" ", "")
+          .replaceAll("-", "")
+          .replaceAll(":", "")
+          .compareTo(a.createdAt.replaceAll(" ", "").replaceAll("-", "").replaceAll(":", "")));
       return Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
               title: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -84,13 +103,20 @@ class _PageChatSingleState extends State<PageChatSingle> {
           body: ctrl.isLoading
               ? loadingPage()
               : Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Expanded(
                       child: ListView.builder(
                           itemCount: listChat.length,
+                          reverse: true,
                           itemBuilder: (BuildContext context, int index) {
                             SqlChat chat = listChat[index];
-                            return cardChat(chat);
+                            return Row(
+                              mainAxisAlignment: chat.isMe == '1' ? MainAxisAlignment.end : MainAxisAlignment.start,
+                              children: [
+                                cardChat(chat),
+                              ],
+                            );
                           }),
                     ),
                     Padding(
@@ -152,24 +178,39 @@ class _PageChatSingleState extends State<PageChatSingle> {
       padding: const EdgeInsets.all(8),
       child: Container(
         decoration: BoxDecoration(
-          color: ColorsTheme.background3,
-          borderRadius: BorderRadius.only(
-            topRight: chat.isMe == '1' ? const Radius.circular(0) : const Radius.circular(8),
-            topLeft: chat.isMe == '1' ? const Radius.circular(8) : const Radius.circular(0),
-            bottomRight: const Radius.circular(8),
-            bottomLeft: const Radius.circular(8),
-          ),
-        ),
+            color: chat.isMe == '1' ? ColorsTheme.background3 : Colors.white70,
+            borderRadius: BorderRadius.only(
+              topRight: chat.isMe == '1' ? const Radius.circular(0) : const Radius.circular(8),
+              topLeft: chat.isMe == '1' ? const Radius.circular(8) : const Radius.circular(0),
+              bottomRight: const Radius.circular(8),
+              bottomLeft: const Radius.circular(8),
+            ),
+            border: Border.all(color: chat.isMe == '1' ? Colors.transparent : Colors.black12)),
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: chat.isMe == '1' ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                chat.message,
-                style: TextStyle(color: ColorsTheme.text1.withOpacity(0.8), fontWeight: FontWeight.w600),
+              Container(
+                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.9),
+                child: Text(
+                  chat.message,
+                  overflow: TextOverflow.visible,
+                  style: TextStyle(
+                      color: chat.isMe == '1' ? Colors.black87 : ColorsTheme.text1.withOpacity(0.8),
+                      fontWeight: FontWeight.w600),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Text(
+                  chat.createdAt,
+                  textAlign: TextAlign.end,
+                  style:
+                      TextStyle(color: ColorsTheme.text1.withOpacity(0.8), fontSize: 10, fontWeight: FontWeight.w300),
+                ),
               )
             ],
           ),

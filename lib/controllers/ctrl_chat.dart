@@ -1,4 +1,6 @@
 // ignore_for_file: unnecessary_overrides, use_build_context_synchronously, avoid_print, prefer_interpolation_to_compose_strings, unnecessary_null_comparison
+import 'dart:math';
+
 import 'package:chat/api/api_services.dart';
 import 'package:chat/controllers/ctrl.dart';
 import 'package:chat/main.dart';
@@ -38,19 +40,24 @@ class CtrlChat extends GetxController {
   Future<GlobalResponse> actionListUser(BuildContext ctx, int page) async {
     try {
       SharedPreferences pref = await SharedPreferences.getInstance();
-      isLoadingTrue(ctx);
       Map data = {};
       data['page'] = page;
       data['search'] = ctrlSearch.text;
+      var len = userBox.values.toList().where((e) => e.userId != pref.getString("PREF_USER_ID")!).toList().length;
       if (page == 1) {
         listUser = [];
       }
+      if (len == 0) {
+        isLoadingTrue(ctx);
+      }
+
       var response = await apiService.apiChatListUser(ctx, data, pref.getString("PREF_TOKEN")!);
       if (response.status) {
         listUser.addAll(response.userList ?? []);
       }
       addUserDbAll(listUser);
       isLoadingFalse(ctx, response.status ? '' : response.remarks);
+
       return response;
     } catch (e) {
       return catchErr(ctx, e);
@@ -95,12 +102,12 @@ class CtrlChat extends GetxController {
 
       final now = ZonedDateTime.now(Timezone('Asia/Jakarta'));
       int year = now.year;
-      int month = now.month;
-      int day = now.day;
-      int hour = now.hour;
-      int minute = now.minute;
-      int second = now.second;
-      DateTime nowDate = DateFormat("$year-$month-$day $hour:$minute:$second").parse(createdAt);
+      String month = now.month.toString().length == 1 ? "0" + now.month.toString() : now.month.toString();
+      String day = now.day.toString().length == 1 ? "0" + now.day.toString() : now.day.toString();
+      String hour = now.hour.toString().length == 1 ? "0" + now.hour.toString() : now.hour.toString();
+      String minute = now.minute.toString().length == 1 ? "0" + now.minute.toString() : now.minute.toString();
+      String second = now.second.toString().length == 1 ? "0" + now.second.toString() : now.second.toString();
+      DateTime nowDate = DateFormat('yyyy-MM-dd HH:mm:ss').parse("$year-$month-$day $hour:$minute:$second");
       String createdAtServer = DateFormat('yyyy-MM-dd HH:mm:ss').format(nowDate);
 
       Chat chat = Chat(
@@ -112,9 +119,8 @@ class CtrlChat extends GetxController {
           createdAt: createdAt,
           timeZone: timeZone,
           createdAtServer: createdAtServer);
+      print(chat.toJson().toString());
       addChatDb(chat);
-
-      isLoadingTrue(ctx);
       Map data = {};
       data['chat_id'] = chatId;
       data['to_user_id'] = userId;
@@ -122,7 +128,7 @@ class CtrlChat extends GetxController {
       data['file'] = file;
       data['created_at'] = createdAt;
       data['time_zone'] = timeZone;
-      var response = await apiService.apiChatSendMessage(ctx, data, pref.getString("PREF_TOKEN")!);
+      var response = await apiService.apiChatSendMessage(ctx, data, pref.getString("PREF_TOKEN") ?? '');
       isLoadingFalse(ctx, response.status ? '' : response.remarks);
       return response;
     } catch (e) {
@@ -147,6 +153,7 @@ class CtrlChat extends GetxController {
 
   void addUserDbAll(List<User> users) async {
     for (var e in users) {
+      int generatedColor = Random().nextInt(Colors.primaries.length);
       ctrlSocket.setSocketAnother(e.userId);
       Box<SqlUser> sqlUserBox = Hive.box<SqlUser>('userBox');
       SqlUser data = SqlUser(
@@ -154,14 +161,16 @@ class CtrlChat extends GetxController {
           fullname: e.userDetail!.fullname,
           isOnline: e.isOnline!,
           status: e.userDetail!.status!,
-          userId: e.userId);
+          userId: e.userId,
+          color: generatedColor);
       addUserDb(sqlUserBox, data);
     }
   }
 
   void addUserDb(Box<SqlUser> sqlUserBox, SqlUser e) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
     sqlUserBox.put(e.userId, e);
-    listUserSql = userBox.values.toList();
+    listUserSql = userBox.values.toList().where((e) => e.userId != pref.getString("PREF_USER_ID")!).toList();
     update();
   }
 

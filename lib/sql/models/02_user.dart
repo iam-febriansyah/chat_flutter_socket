@@ -21,10 +21,14 @@ class SqlUser extends HiveObject {
   @HiveField(4)
   String status;
 
+  @HiveField(5)
+  int? color;
+
   SqlUser(
       {required this.userId,
       required this.email,
       required this.isOnline,
       required this.fullname,
-      required this.status});
+      required this.status,
+      this.color});
 }
